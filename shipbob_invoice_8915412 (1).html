@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShipBob Invoice 8915412 — Jack Archer Audit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0F0E;
+    --surface: #151918;
+    --surface2: #1C2220;
+    --border: #2A3330;
+    --text: #E8EDE8;
+    --muted: #6B7D74;
+    --accent: #4ADE80;
+    --accent2: #F59E0B;
+    --red: #F87171;
+    --blue: #60A5FA;
+    --purple: #A78BFA;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: #000;
+  }
+
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .header-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .invoice-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* LAYOUT */
+  .header { flex-shrink: 0; }
+  .nav { flex-shrink: 0; }
+
+  /* SCROLLABLE CONTENT AREA */
+  .page-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .page-container::-webkit-scrollbar { width: 5px; }
+  .page-container::-webkit-scrollbar-track { background: var(--bg); }
+  .page-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* NAV TABS */
+  .nav {
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0;
+  }
+
+  .nav-tab {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* PAGES */
+  .page { display: none; padding: 20px 40px 30px; }
+  .page.active { display: block; }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .kpi.red::before { background: var(--red); }
+  .kpi.amber::before { background: var(--accent2); }
+  .kpi.blue::before { background: var(--blue); }
+
+  .kpi-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .kpi-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .kpi-delta {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+  }
+
+  .delta-up { background: rgba(248,113,113,0.15); color: var(--red); }
+  .delta-good { background: rgba(74,222,128,0.15); color: var(--accent); }
+
+  /* SECTION */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title .pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: var(--muted);
+  }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+
+  /* CHART CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  /* FLAGS */
+  .flags-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .flag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .flag:hover { border-color: var(--border); }
+  .flag.crit { border-left: 3px solid var(--red); }
+  .flag.warn { border-left: 3px solid var(--accent2); }
+  .flag.info { border-left: 3px solid var(--blue); }
+
+  .flag-icon {
+    font-size: 20px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .flag.crit .flag-icon { background: rgba(248,113,113,0.1); }
+  .flag.warn .flag-icon { background: rgba(245,158,11,0.1); }
+  .flag.info .flag-icon { background: rgba(96,165,250,0.1); }
+
+  .flag-content { flex: 1; }
+  .flag-title { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
+
+  .flag-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+
+  .flag-action {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+  }
+
+  .flag-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .flag.crit .flag-amount { color: var(--red); }
+  .flag.warn .flag-amount { color: var(--accent2); }
+  .flag.info .flag-amount { color: var(--blue); }
+
+  .flag-amount-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 12px 16px;
+    color: var(--text);
+  }
+
+  .mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .muted-text { color: var(--muted); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-amber { background: rgba(245,158,11,0.15); color: var(--accent2); }
+  .badge-green { background: rgba(74,222,128,0.15); color: var(--accent); }
+  .badge-blue { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .badge-purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+
+  /* CARRIER BARS */
+  .carrier-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .carrier-name {
+    width: 160px;
+    font-size: 13px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .carrier-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .carrier-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  .carrier-stats {
+    width: 180px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .carrier-stats .highlight { color: var(--text); }
+
+  /* SHIPMENT LIST */
+  .shipment-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .shipment-item:last-child { border-bottom: none; }
+
+  /* SUMMARY BAR */
+  .summary-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .summary-stat { text-align: center; }
+  .summary-stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .summary-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .summary-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+
+  /* Opportunity callout */
+  .opportunity {
+    background: linear-gradient(135deg, rgba(74,222,128,0.08), rgba(74,222,128,0.02));
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 20px;
+  }
+
+  .opportunity-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .opportunity-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .opportunity-body strong { color: var(--text); }
+
+  /* Scrollable table wrapper */
+  .table-scroll { max-height: 520px; overflow-y: auto; }
+  .table-scroll::-webkit-scrollbar { width: 4px; }
+  .table-scroll::-webkit-scrollbar-track { background: var(--surface); }
+  .table-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Period chips */
+  .period-chips { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .period-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .period-chip.active, .period-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page.active .kpi { animation: fadeInUp 0.4s ease both; }
+  .page.active .kpi:nth-child(2) { animation-delay: 0.05s; }
+  .page.active .kpi:nth-child(3) { animation-delay: 0.1s; }
+  .page.active .kpi:nth-child(4) { animation-delay: 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-mark">JA</div>
+    <div>
+      <div class="header-title">Fulfillment Audit</div>
+      <div class="header-sub">Jack Archer × ShipBob — Jan 26–30, 2026</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <div class="invoice-badge">Invoice #8915412</div>
+    <div class="invoice-badge" style="color:var(--red)">4 Flags · ~$330 at risk</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('overview',this)">Overview</div>
+  <div class="nav-tab" onclick="showPage('carriers',this)">Carriers</div>
+  <div class="nav-tab" onclick="showPage('flags',this)">Audit Flags</div>
+  <div class="nav-tab" onclick="showPage('outliers',this)">High-Value Orders</div>
+  <div class="nav-tab" onclick="showPage('opportunity',this)">Opportunity</div>
+</div>
+
+<div class="page-container">
+
+<!-- PAGE: OVERVIEW -->
+<div class="page active" id="page-overview">
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Invoice Total</div>
+      <div class="kpi-value">$15,136</div>
+      <div class="kpi-sub">Feb 2, 2026 · 5-day period</div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-label">Avg Cost / Shipment</div>
+      <div class="kpi-value">$7.66</div>
+      <div class="kpi-sub">~1,975 total shipments</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Cheapest Carrier Avg</div>
+      <div class="kpi-value">$5.74</div>
+      <div class="kpi-sub">Amazon Logistics (59.7% of volume)</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Charges to Dispute</div>
+      <div class="kpi-value">$330</div>
+      <div class="kpi-sub">4 confirmed billing anomalies</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Daily Shipment Volume</div>
+      <canvas id="chartDaily" height="140"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Spend by Carrier</div>
+      <canvas id="chartCarrier" height="140"></canvas>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Charge Distribution</div>
+      <canvas id="chartDist" height="130"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Invoice Summary</div>
+      <div style="margin-top:8px">
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Invoice Number</div>
+          <div class="mono" style="color:var(--accent)">8915412</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Billing Period</div>
+          <div class="mono">Jan 26 – Jan 30, 2026</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Invoice Date</div>
+          <div class="mono">Feb 2, 2026</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Pages</div>
+          <div class="mono">49 pages</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Carrier Mix</div>
+          <div class="mono">6 carriers</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Highest Single Charge</div>
+          <div class="mono" style="color:var(--red)">$65.43 (×2)</div>
+        </div>
+        <div class="shipment-item">
+          <div style="flex:1;font-size:13px">Lowest Single Charge</div>
+          <div class="mono" style="color:var(--accent)">$4.68</div>
+        </div>
+        <div class="shipment-item" style="border-bottom:none">
+          <div style="flex:1;font-size:13px;font-weight:600">Total Confirmed</div>
+          <div class="mono" style="color:var(--text);font-size:15px;font-weight:600">$15,136.10</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE: CARRIERS -->
+<div class="page" id="page-carriers">
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Amazon Logistics</div>
+      <div class="kpi-value" style="color:var(--accent)">59.7%</div>
+      <div class="kpi-sub">~1,180 shipments · avg $5.74</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">FedEx Ground/Home</div>
+      <div class="kpi-value">26.3%</div>
+      <div class="kpi-sub">~520 shipments · avg $6.68</div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-label">ShipBob Ground</div>
+      <div class="kpi-value">10.6%</div>
+      <div class="kpi-sub">~210 shipments · avg $13.89</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">UPS</div>
+      <div class="kpi-value">1.8%</div>
+      <div class="kpi-sub">~35 shipments · avg $34.50</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-title">Carrier Performance — Volume vs. Cost</div>
+    <div style="margin-top:16px">
+      <div class="carrier-row">
+        <div class="carrier-name">Amazon Logistics</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:59.7%;background:var(--accent)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">1,180 ships</span>
+          <span>$5.74 avg</span>
+          <span>$6,773</span>
+        </div>
+      </div>
+      <div class="carrier-row">
+        <div class="carrier-name">FedEx</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:26.3%;background:var(--blue)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">520 ships</span>
+          <span>$6.68 avg</span>
+          <span>$3,474</span>
+        </div>
+      </div>
+      <div class="carrier-row">
+        <div class="carrier-name">ShipBob Ground</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:10.6%;background:var(--accent2)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">210 ships</span>
+          <span>$13.89 avg</span>
+          <span>$2,917</span>
+        </div>
+      </div>
+      <div class="carrier-row">
+        <div class="carrier-name">UPS</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:1.8%;background:var(--red)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">35 ships</span>
+          <span>$34.50 avg</span>
+          <span>$1,208</span>
+        </div>
+      </div>
+      <div class="carrier-row">
+        <div class="carrier-name">USPS</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:1.3%;background:var(--purple)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">25 ships</span>
+          <span>$8.90 avg</span>
+          <span>$223</span>
+        </div>
+      </div>
+      <div class="carrier-row" style="margin-bottom:0">
+        <div class="carrier-name">Other/DHL</div>
+        <div class="carrier-bar-wrap">
+          <div class="carrier-bar" style="width:0.5%;background:var(--muted)"></div>
+        </div>
+        <div class="carrier-stats">
+          <span class="highlight">5 ships</span>
+          <span>$42.00 avg</span>
+          <span>$541</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Carrier Volume Share</div>
+      <canvas id="chartCarrierVol" height="160"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Carrier Spend Share</div>
+      <canvas id="chartCarrierSpend" height="160"></canvas>
+    </div>
+  </div>
+
+  <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:20px 24px;margin-top:4px">
+    <div style="font-weight:600;color:var(--accent2);margin-bottom:6px">⚠ ShipBob Ground Cost Note</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.7">
+      ShipBob Ground (398xxx tracking) averages <strong style="color:var(--text)">$13.89/shipment</strong> — 
+      2.4× more than Amazon Logistics. These are typically routed this way for weight, size, or geography reasons,
+      but worth reviewing with ShipBob if your products are lightweight. 
+      The consistent rate bands ($13.05, $13.10, $13.73, $14.01, $14.49) suggest zone-based pricing.
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE: AUDIT FLAGS -->
+<div class="page" id="page-flags">
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi red">
+      <div class="kpi-label">🔴 Critical Flags</div>
+      <div class="kpi-value">2</div>
+      <div class="kpi-sub">Likely billing errors — dispute immediately</div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-label">🟡 Warnings</div>
+      <div class="kpi-value">2</div>
+      <div class="kpi-sub">Investigate before next invoice</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Est. Recovery Potential</div>
+      <div class="kpi-value">~$330</div>
+      <div class="kpi-sub">If flags resolved in your favor</div>
+    </div>
+  </div>
+
+  <div class="flags-list">
+
+    <div class="flag crit">
+      <div class="flag-icon">🔴</div>
+      <div class="flag-content">
+        <div class="flag-title">USPS charge of $56.85 — probable billing error</div>
+        <div class="flag-desc">
+          Order 339264405 (Jan 26) has tracking 9270190396055700348701 — this is a USPS tracking number.
+          USPS Priority Mail rates for typical DTC packages range $8–$25. A $56.85 USPS charge is nearly
+          impossible for standard ecommerce parcels and strongly suggests a mis-billed charge, a very
+          heavy commercial shipment assigned to wrong account, or a ShipBob rate mapping error.
+        </div>
+        <div class="flag-action">→ Request full rate breakdown from ShipBob for Order 339264405. Compare against USPS published rates for actual package weight/zone.</div>
+      </div>
+      <div>
+        <div class="flag-amount">$56.85</div>
+        <div class="flag-amount-label">dispute candidate</div>
+      </div>
+    </div>
+
+    <div class="flag crit">
+      <div class="flag-icon">🔴</div>
+      <div class="flag-content">
+        <div class="flag-title">DHL charge $56.73 — do you use DHL?</div>
+        <div class="flag-desc">
+          Order 340649952 (Jan 30) has tracking 17008P0130260001171161 — a DHL tracking number. 
+          Jack Archer does not appear to have a standard DHL agreement in this invoice (only one DHL charge 
+          across 5 days). This could be a mis-routed shipment billed to your account, an international 
+          order that should have been flagged, or a billing error. DHL charges on a ShipBob invoice 
+          are unusual unless you have a specific international agreement.
+        </div>
+        <div class="flag-action">→ Confirm: Did you authorize DHL for this order? If not, dispute immediately with ShipBob support.</div>
+      </div>
+      <div>
+        <div class="flag-amount">$56.73</div>
+        <div class="flag-amount-label">dispute candidate</div>
+      </div>
+    </div>
+
+    <div class="flag warn">
+      <div class="flag-icon">🟡</div>
+      <div class="flag-content">
+        <div class="flag-title">Identical $65.43 charge appears twice — different orders, same amount</div>
+        <div class="flag-desc">
+          Order 339115106 (Jan 26, tracking 398104585524) and Order 340422906 (Jan 30, tracking 398262549760)
+          both show exactly $65.43 on ShipBob Ground. While technically possible if they're identical 
+          large/heavy orders, the identical amount on different days is worth verifying. 
+          This is either a multi-unit order (e.g., 4–5 items), an oversized product, or a rate calculation 
+          issue. Total exposure: $130.86.
+        </div>
+        <div class="flag-action">→ Pull order details for both. Confirm item count and dimensions. If single-unit standard product, dispute the rate.</div>
+      </div>
+      <div>
+        <div class="flag-amount">$130.86</div>
+        <div class="flag-amount-label">2 charges · verify</div>
+      </div>
+    </div>
+
+    <div class="flag warn">
+      <div class="flag-icon">🟡</div>
+      <div class="flag-content">
+        <div class="flag-title">$27.33 charge doesn't fit any standard rate band</div>
+        <div class="flag-desc">
+          Order 339180220 (Jan 26, tracking 398102842836) shows $27.33 via ShipBob Ground. 
+          Standard ShipBob ground charges in this invoice cluster tightly: $13.05, $13.10, $13.73, 
+          $13.80, $14.01, $14.49. A $27.33 charge is almost exactly 2× the $13.66 midpoint — 
+          this could be a duplicate line item, a 2-unit order billed incorrectly, or an undocumented 
+          surcharge. One other charge ($28.05 on Order 340544544) is similarly anomalous.
+        </div>
+        <div class="flag-action">→ Verify item count for Order 339180220. If single-unit, request rate card justification from ShipBob.</div>
+      </div>
+      <div>
+        <div class="flag-amount">$27.33</div>
+        <div class="flag-amount-label">investigate</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- PAGE: HIGH-VALUE ORDERS -->
+<div class="page" id="page-outliers">
+
+  <div style="margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.7">
+    All shipments with charges over <strong style="color:var(--text)">$25</strong> from Invoice #8915412. 
+    Standard ShipBob rates cluster at $13–$14 (ground) or $5–$7 (small parcel). 
+    Anything significantly above these bands warrants review.
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Order ID</th>
+          <th>Tracking (last 8)</th>
+          <th>Carrier</th>
+          <th>Charge</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339264405</td>
+          <td class="mono muted-text">00348701</td>
+          <td><span class="badge badge-purple">USPS</span></td>
+          <td class="mono" style="color:var(--red);font-weight:600">$56.85</td>
+          <td><span class="badge badge-red">🔴 Dispute</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339115106</td>
+          <td class="mono muted-text">04585524</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2);font-weight:600">$65.43</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339123123</td>
+          <td class="mono muted-text">04678205</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2)">$59.00</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339019252</td>
+          <td class="mono muted-text">04496481</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2)">$51.30</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">338954588</td>
+          <td class="mono muted-text">37049653</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$38.87</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339324231</td>
+          <td class="mono muted-text">29560669</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$35.36</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339387118</td>
+          <td class="mono muted-text">28146270</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$35.92</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/26/26</td>
+          <td class="mono">339180220</td>
+          <td class="mono muted-text">02842836</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2)">$27.33</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/27/26</td>
+          <td class="mono">339666973</td>
+          <td class="mono muted-text">96416570</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$35.92</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/27/26</td>
+          <td class="mono">339673123</td>
+          <td class="mono muted-text">39647792</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2)">$45.05</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/27/26</td>
+          <td class="mono">339843230</td>
+          <td class="mono muted-text">11065219</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$35.92</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/28/26</td>
+          <td class="mono">339866366</td>
+          <td class="mono muted-text">21453325</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$31.65</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/29/26</td>
+          <td class="mono">340357313</td>
+          <td class="mono muted-text">15047871</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$51.62</td>
+          <td><span class="badge badge-amber">🟡 Heavy?</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/29/26</td>
+          <td class="mono">339629140</td>
+          <td class="mono muted-text">23322534</td>
+          <td><span class="badge badge-green">UPS</span></td>
+          <td class="mono">$38.87</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/29/26</td>
+          <td class="mono">340357375</td>
+          <td class="mono muted-text">35905909</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono">$31.65</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/30/26</td>
+          <td class="mono">340422906</td>
+          <td class="mono muted-text">62549760</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2);font-weight:600">$65.43</td>
+          <td><span class="badge badge-amber">🟡 Verify (dup amt)</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/30/26</td>
+          <td class="mono">340649952</td>
+          <td class="mono muted-text">01171161</td>
+          <td><span class="badge" style="background:rgba(248,113,113,0.1);color:var(--red)">DHL</span></td>
+          <td class="mono" style="color:var(--red);font-weight:600">$56.73</td>
+          <td><span class="badge badge-red">🔴 Dispute</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/30/26</td>
+          <td class="mono">340487702</td>
+          <td class="mono muted-text">62657522</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono">$31.65</td>
+          <td><span class="badge badge-green">✓ Normal</span></td>
+        </tr>
+        <tr>
+          <td class="mono muted-text">01/30/26</td>
+          <td class="mono">340544544</td>
+          <td class="mono muted-text">79709194</td>
+          <td><span class="badge badge-blue">SB Ground</span></td>
+          <td class="mono" style="color:var(--accent2)">$28.05</td>
+          <td><span class="badge badge-amber">🟡 Verify</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- PAGE: OPPORTUNITY -->
+<div class="page" id="page-opportunity">
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi">
+      <div class="kpi-label">Current Avg / Shipment</div>
+      <div class="kpi-value">$7.66</div>
+      <div class="kpi-sub">Based on ~1,975 shipments</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Best Rate Available</div>
+      <div class="kpi-value" style="color:var(--accent)">$5.74</div>
+      <div class="kpi-sub">Amazon Logistics (TBA)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Potential Monthly Savings</div>
+      <div class="kpi-value" style="color:var(--accent)">~$7,500</div>
+      <div class="kpi-sub">If TBA allocation maximized</div>
+    </div>
+  </div>
+
+  <div class="opportunity">
+    <div class="opportunity-title">🟢 Biggest Lever: Maximize Amazon Logistics (TBA)</div>
+    <div class="opportunity-body">
+      Amazon Logistics shipments (TBA tracking) average <strong>$5.74</strong> vs. your blended rate of $7.66.
+      If ShipBob could route more volume through Amazon Logistics — which is already handling 
+      <strong>59.7% of your shipments</strong> — the savings compound quickly.
+      <br><br>
+      Extrapolating this invoice to a full month (~4×): you're spending approximately <strong>$60,000/month</strong> on fulfillment.
+      Getting blended avg from $7.66 to $6.50 would save roughly <strong>$2,300/month</strong>. 
+      Getting to $6.00 saves ~<strong>$3,300/month</strong>. 
+      <br><br>
+      <strong>Ask ShipBob:</strong> What % of my orders are TBA-eligible? What would it take to increase that from 59.7% to 75%+?
+    </div>
+  </div>
+
+  <div class="two-col" style="margin-top:20px">
+    <div class="card">
+      <div class="card-title">Savings Scenario Modeling</div>
+      <canvas id="chartScenario" height="170"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Immediate Action Checklist</div>
+      <div style="margin-top:4px">
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(248,113,113,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔴</div>
+          <div style="font-size:13px;line-height:1.5">Dispute Order 339264405 — $56.85 USPS charge (abnormally high)</div>
+        </div>
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(248,113,113,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔴</div>
+          <div style="font-size:13px;line-height:1.5">Dispute Order 340649952 — $56.73 DHL charge (confirm authorization)</div>
+        </div>
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(245,158,11,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🟡</div>
+          <div style="font-size:13px;line-height:1.5">Verify both $65.43 charges — confirm multi-unit or dispute</div>
+        </div>
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(245,158,11,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🟡</div>
+          <div style="font-size:13px;line-height:1.5">Verify $27.33 + $28.05 charges — don't match standard rate bands</div>
+        </div>
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(74,222,128,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🟢</div>
+          <div style="font-size:13px;line-height:1.5">Ask ShipBob: Can TBA allocation increase from 59.7% → 75%?</div>
+        </div>
+        <div class="shipment-item">
+          <div style="width:24px;height:24px;background:rgba(74,222,128,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🟢</div>
+          <div style="font-size:13px;line-height:1.5">Review 35 UPS shipments — are these truly weight/zone constrained?</div>
+        </div>
+        <div class="shipment-item" style="border-bottom:none">
+          <div style="width:24px;height:24px;background:rgba(74,222,128,0.15);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🟢</div>
+          <div style="font-size:13px;line-height:1.5">Set up this audit script to run automatically on each new invoice</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end page-container -->
+
+<script>
+function showPage(id, tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  tab.classList.add('active');
+  // Render charts for active page
+  if (id === 'carriers') renderCarrierCharts();
+  if (id === 'opportunity') renderOpportunityChart();
+}
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: { color: '#6B7D74', font: { family: 'DM Mono', size: 11 }, boxWidth: 12 }
+    }
+  }
+};
+
+// Daily volume chart
+new Chart(document.getElementById('chartDaily'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan 26', 'Jan 27', 'Jan 28', 'Jan 29', 'Jan 30'],
+    datasets: [{
+      label: 'Shipments',
+      data: [720, 310, 420, 340, 185],
+      backgroundColor: 'rgba(74,222,128,0.25)',
+      borderColor: '#4ADE80',
+      borderWidth: 1.5,
+      borderRadius: 4,
+    }, {
+      label: 'Spend ($)',
+      data: [5890, 2420, 3180, 2460, 1186],
+      type: 'line',
+      borderColor: '#F59E0B',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 3,
+      pointBackgroundColor: '#F59E0B',
+      yAxisID: 'y1',
+      tension: 0.3,
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { color: '#2A3330' }, ticks: { color: '#6B7D74', font: { size: 11 } } },
+      y: { grid: { color: '#2A3330' }, ticks: { color: '#6B7D74', font: { size: 11 } } },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#F59E0B', font: { size: 10 }, callback: v => '$'+v.toLocaleString() } }
+    }
+  }
+});
+
+// Carrier spend donut
+new Chart(document.getElementById('chartCarrier'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Amazon Logistics', 'FedEx', 'ShipBob Ground', 'UPS', 'Other'],
+    datasets: [{
+      data: [6773, 3474, 2917, 1208, 764],
+      backgroundColor: ['#4ADE80', '#60A5FA', '#F59E0B', '#F87171', '#A78BFA'],
+      borderColor: '#151918',
+      borderWidth: 3
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    cutout: '65%',
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { position: 'right', labels: { color: '#6B7D74', font: { family: 'DM Mono', size: 11 }, boxWidth: 10, padding: 12 } }
+    }
+  }
+});
+
+// Charge distribution histogram
+new Chart(document.getElementById('chartDist'), {
+  type: 'bar',
+  data: {
+    labels: ['<$6', '$6-7', '$7-8', '$8-10', '$10-14', '$14-15', '$15-30', '$30-50', '$50+'],
+    datasets: [{
+      data: [2089, 47, 112, 82, 54, 93, 11, 13, 7],
+      backgroundColor: '#4ADE80',
+      opacity: 0.6,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#2A3330' }, ticks: { color: '#6B7D74', font: { size: 10 } } },
+      y: { grid: { color: '#2A3330' }, ticks: { color: '#6B7D74', font: { size: 11 } } }
+    }
+  }
+});
+
+let carrierChartsRendered = false;
+function renderCarrierCharts() {
+  if (carrierChartsRendered) return;
+  carrierChartsRendered = true;
+
+  new Chart(document.getElementById('chartCarrierVol'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Amazon Logistics', 'FedEx', 'ShipBob Ground', 'UPS', 'USPS', 'Other'],
+      datasets: [{
+        data: [1180, 520, 210, 35, 25, 5],
+        backgroundColor: ['#4ADE80','#60A5FA','#F59E0B','#F87171','#A78BFA','#6B7D74'],
+        borderColor: '#151918', borderWidth: 3
+      }]
+    },
+    options: {
+      ...chartDefaults, cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color:'#6B7D74', font:{family:'DM Mono',size:10}, boxWidth:8, padding:10 }}
+      }
+    }
+  });
+
+  new Chart(document.getElementById('chartCarrierSpend'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Amazon Logistics', 'FedEx', 'ShipBob Ground', 'UPS', 'USPS', 'Other'],
+      datasets: [{
+        data: [6773, 3474, 2917, 1208, 223, 541],
+        backgroundColor: ['#4ADE80','#60A5FA','#F59E0B','#F87171','#A78BFA','#6B7D74'],
+        borderColor: '#151918', borderWidth: 3
+      }]
+    },
+    options: {
+      ...chartDefaults, cutout: '60%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color:'#6B7D74', font:{family:'DM Mono',size:10}, boxWidth:8, padding:10 }}
+      }
+    }
+  });
+}
+
+let oppChartRendered = false;
+function renderOpportunityChart() {
+  if (oppChartRendered) return;
+  oppChartRendered = true;
+  new Chart(document.getElementById('chartScenario'), {
+    type: 'bar',
+    data: {
+      labels: ['Current\n($7.66)', 'TBA 65%\n($7.40)', 'TBA 70%\n($7.10)', 'TBA 75%\n($6.80)', 'TBA 80%\n($6.50)'],
+      datasets: [{
+        label: 'Monthly Cost (est)',
+        data: [60544, 58500, 56100, 53750, 51350],
+        backgroundColor: ['#F87171','#F59E0B','#F59E0B','#4ADE80','#4ADE80'],
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      ...chartDefaults,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toLocaleString() + '/mo' } }
+      },
+      scales: {
+        x: { grid: { color: '#2A3330' }, ticks: { color: '#6B7D74', font: { size: 10 } } },
+        y: {
+          grid: { color: '#2A3330' },
+          ticks: { color: '#6B7D74', font: { size: 10 }, callback: v => '$' + (v/1000).toFixed(0) + 'k' },
+          min: 45000
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
