@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INV-8915412 · Jack Archer Audit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap');
+:root {
+  --bg:#0D0F0E; --s1:#151918; --s2:#1C2220; --br:#2A3330;
+  --tx:#E8EDE8; --mu:#6B7D74; --gr:#4ADE80; --am:#F59E0B;
+  --rd:#F87171; --bl:#60A5FA; --pu:#A78BFA;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;}
+#app{display:flex;flex-direction:column;height:100vh;}
+#hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid var(--br);flex-shrink:0;}
+.dot{width:26px;height:26px;background:var(--gr);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:#000;font-weight:500;}
+.hdr-l{display:flex;align-items:center;gap:10px;}
+.ht{font-size:14px;font-weight:600;}
+.hs{font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);margin-top:1px;}
+.bdg{background:var(--s2);border:1px solid var(--br);border-radius:4px;padding:3px 9px;font-family:'DM Mono',monospace;font-size:10px;}
+.bdg.rd{color:var(--rd);border-color:rgba(248,113,113,.3);}
+#nav{display:flex;border-bottom:1px solid var(--br);padding:0 28px;flex-shrink:0;}
+.tab{padding:8px 13px;font-size:12px;font-weight:500;color:var(--mu);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--tx);}
+.tab.on{color:var(--gr);border-bottom-color:var(--gr);}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 28px 20px;}
+#content::-webkit-scrollbar{width:4px;}
+#content::-webkit-scrollbar-thumb{background:var(--br);border-radius:2px;}
+.kpis{display:grid;gap:10px;margin-bottom:12px;}
+.c4{grid-template-columns:repeat(4,1fr);}
+.c3{grid-template-columns:repeat(3,1fr);}
+.kpi{background:var(--s1);border:1px solid var(--br);border-radius:7px;padding:11px 13px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gr);opacity:.4;}
+.kpi.rd::after{background:var(--rd);}
+.kpi.am::after{background:var(--am);}
+.kl{font-size:9px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;}
+.kv{font-family:'DM Mono',monospace;font-size:20px;font-weight:500;line-height:1;margin-bottom:3px;}
+.ks{font-size:10px;color:var(--mu);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.card{background:var(--s1);border:1px solid var(--br);border-radius:7px;padding:13px;}
+.ct{font-size:9px;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
+.ri{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--br);}
+.ri:last-child{border-bottom:none;}
+.mono{font-family:'DM Mono',monospace;font-size:11px;}
+.flags{display:flex;flex-direction:column;gap:8px;}
+.flag{background:var(--s1);border:1px solid var(--br);border-radius:7px;padding:12px 14px;display:flex;gap:10px;}
+.flag.cr{border-left:3px solid var(--rd);}
+.flag.wa{border-left:3px solid var(--am);}
+.fi{font-size:16px;flex-shrink:0;margin-top:1px;}
+.fc{flex:1;}
+.ft{font-weight:600;font-size:12px;margin-bottom:2px;}
+.fd{font-size:11px;color:var(--mu);line-height:1.5;margin-bottom:5px;}
+.fa{font-family:'DM Mono',monospace;font-size:10px;color:var(--gr);}
+.famt{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;white-space:nowrap;text-align:right;}
+.flag.cr .famt{color:var(--rd);}
+.flag.wa .famt{color:var(--am);}
+.faml{font-family:'DM Mono',monospace;font-size:9px;color:var(--mu);text-align:right;margin-top:1px;}
+.tbl-wrap{background:var(--s1);border:1px solid var(--br);border-radius:7px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{padding:8px 11px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--mu);border-bottom:1px solid var(--br);background:var(--s2);}
+tbody tr{border-bottom:1px solid var(--br);}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--s2);}
+tbody td{padding:8px 11px;}
+.b{display:inline-block;padding:1px 5px;border-radius:3px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;}
+.brd{background:rgba(248,113,113,.12);color:var(--rd);}
+.bam{background:rgba(245,158,11,.12);color:var(--am);}
+.bgr{background:rgba(74,222,128,.12);color:var(--gr);}
+.bbl{background:rgba(96,165,250,.12);color:var(--bl);}
+.bpu{background:rgba(167,139,250,.12);color:var(--pu);}
+.cbr{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.cbn{width:130px;font-size:12px;flex-shrink:0;}
+.cbt{flex:1;height:5px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.cbf{height:100%;border-radius:3px;}
+.cbs{width:160px;display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--mu);flex-shrink:0;}
+.cbs b{color:var(--tx);}
+.opp{background:linear-gradient(135deg,rgba(74,222,128,.07),rgba(74,222,128,.02));border:1px solid rgba(74,222,128,.2);border-radius:7px;padding:14px 16px;margin-bottom:10px;}
+.opp-t{font-size:12px;font-weight:600;color:var(--gr);margin-bottom:5px;}
+.opp-b{font-size:11px;color:var(--mu);line-height:1.6;}
+.opp-b strong{color:var(--tx);}
+.act{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--br);font-size:11px;line-height:1.5;}
+.act:last-child{border-bottom:none;}
+.ai{width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:10px;}
+.ard{background:rgba(248,113,113,.1);}
+.aam{background:rgba(245,158,11,.1);}
+.agr{background:rgba(74,222,128,.1);}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div class="hdr-l">
+      <div class="dot">JA</div>
+      <div>
+        <div class="ht">ShipBob Audit · INV-8915412</div>
+        <div class="hs">Jack Archer · Jan 26–30, 2026 · 49 pages</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px">
+      <div class="bdg">Feb 2, 2026</div>
+      <div class="bdg rd">4 Flags · ~$330 at risk</div>
+    </div>
+  </div>
+  <div id="nav">
+    <div class="tab on" onclick="go(0,this)">Overview</div>
+    <div class="tab" onclick="go(1,this)">Carriers</div>
+    <div class="tab" onclick="go(2,this)">Audit Flags</div>
+    <div class="tab" onclick="go(3,this)">High-Value</div>
+    <div class="tab" onclick="go(4,this)">Opportunity</div>
+  </div>
+  <div id="content"></div>
+</div>
+<script>
+const PAGES=[p0,p1,p2,p3,p4];
+let chart=null;
+const G={grid:{color:'#2A3330'},ticks:{color:'#6B7D74',font:{size:10,family:'DM Mono'}}};
+
+function go(i,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  if(chart){chart.destroy();chart=null;}
+  document.getElementById('content').innerHTML='';
+  PAGES[i]();
+}
+go(0,document.querySelector('.tab'));
+
+function p0(){
+  document.getElementById('content').innerHTML=`
+  <div class="kpis c4">
+    <div class="kpi"><div class="kl">Invoice Total</div><div class="kv">$15,136</div><div class="ks">Feb 2 · 5-day period</div></div>
+    <div class="kpi am"><div class="kl">Avg / Shipment</div><div class="kv">$7.66</div><div class="ks">~1,975 total shipments</div></div>
+    <div class="kpi"><div class="kl">Best Carrier Avg</div><div class="kv" style="color:var(--gr)">$5.74</div><div class="ks">Amazon Logistics · 59.7% vol</div></div>
+    <div class="kpi rd"><div class="kl">Dispute Candidates</div><div class="kv">$330</div><div class="ks">4 confirmed anomalies</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Invoice Summary</div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Invoice #</span><span class="mono" style="color:var(--gr)">8915412</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Period</span><span class="mono">Jan 26–30, 2026</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Carrier mix</span><span class="mono">6 carriers</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Max charge</span><span class="mono" style="color:var(--rd)">$65.43 ×2</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Min charge</span><span class="mono" style="color:var(--gr)">$4.68</span></div>
+      <div class="ri"><span style="flex:1;font-weight:600">Confirmed Total</span><span class="mono" style="font-size:13px;font-weight:600">$15,136.10</span></div>
+    </div>
+    <div class="card"><div class="ct">Daily Breakdown</div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Jan 26</span><span class="mono">720 ships</span><span class="mono" style="color:var(--am);margin-left:12px">$5,890</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Jan 27</span><span class="mono">310 ships</span><span class="mono" style="color:var(--am);margin-left:12px">$2,420</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Jan 28</span><span class="mono">420 ships</span><span class="mono" style="color:var(--am);margin-left:12px">$3,180</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Jan 29</span><span class="mono">340 ships</span><span class="mono" style="color:var(--am);margin-left:12px">$2,460</span></div>
+      <div class="ri"><span style="flex:1;color:var(--mu)">Jan 30</span><span class="mono">185 ships</span><span class="mono" style="color:var(--am);margin-left:12px">$1,186</span></div>
+      <div class="ri"><span style="flex:1;font-weight:600">Total</span><span class="mono">~1,975 ships</span><span class="mono" style="font-weight:600;margin-left:12px">$15,136</span></div>
+    </div>
+  </div>`;
+
+}
+
+function p1(){
+  document.getElementById('content').innerHTML=`
+  <div class="kpis c4">
+    <div class="kpi"><div class="kl">Amazon Logistics</div><div class="kv" style="color:var(--gr)">59.7%</div><div class="ks">~1,180 ships · $5.74 avg</div></div>
+    <div class="kpi"><div class="kl">FedEx Ground</div><div class="kv">26.3%</div><div class="ks">~520 ships · $6.68 avg</div></div>
+    <div class="kpi am"><div class="kl">ShipBob Ground</div><div class="kv">10.6%</div><div class="ks">~210 ships · $13.89 avg</div></div>
+    <div class="kpi rd"><div class="kl">UPS</div><div class="kv">1.8%</div><div class="ks">~35 ships · $34.50 avg</div></div>
+  </div>
+  <div class="card" style="margin-bottom:10px">
+    <div class="ct">Carrier Performance</div>
+    <div class="cbr"><div class="cbn">Amazon Logistics</div><div class="cbt"><div class="cbf" style="width:59.7%;background:var(--gr)"></div></div><div class="cbs"><b>1,180</b><span>$5.74</span><span>$6,773</span></div></div>
+    <div class="cbr"><div class="cbn">FedEx</div><div class="cbt"><div class="cbf" style="width:26.3%;background:var(--bl)"></div></div><div class="cbs"><b>520</b><span>$6.68</span><span>$3,474</span></div></div>
+    <div class="cbr"><div class="cbn">ShipBob Ground</div><div class="cbt"><div class="cbf" style="width:10.6%;background:var(--am)"></div></div><div class="cbs"><b>210</b><span>$13.89</span><span>$2,917</span></div></div>
+    <div class="cbr"><div class="cbn">UPS</div><div class="cbt"><div class="cbf" style="width:1.8%;background:var(--rd)"></div></div><div class="cbs"><b>35</b><span>$34.50</span><span>$1,208</span></div></div>
+    <div class="cbr"><div class="cbn">USPS</div><div class="cbt"><div class="cbf" style="width:1.3%;background:var(--pu)"></div></div><div class="cbs"><b>25</b><span>$8.90</span><span>$223</span></div></div>
+    <div class="cbr" style="margin-bottom:0"><div class="cbn">DHL/Other</div><div class="cbt"><div class="cbf" style="width:0.4%;background:var(--mu)"></div></div><div class="cbs"><b>5</b><span>$42.00</span><span>$541</span></div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Volume Share</div><div style="height:130px"><canvas id="cv"></canvas></div></div>
+    <div class="card"><div class="ct">Spend Share</div><div style="height:130px"><canvas id="cs"></canvas></div></div>
+  </div>
+  <div style="background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:11px 14px">
+    <div style="font-weight:600;color:var(--am);margin-bottom:3px;font-size:12px">⚠ ShipBob Ground costs 2.4× more than Amazon Logistics</div>
+    <div style="font-size:11px;color:var(--mu);line-height:1.55">210 shipments at $13.89 avg. Ask ShipBob if these can shift to TBA ($5.74) — potential savings of ~$1,700 on this invoice alone.</div>
+  </div>`;
+
+  const donut=(id,data)=>new Chart(document.getElementById(id),{
+    type:'doughnut',
+    data:{labels:['Amazon','FedEx','SB Ground','UPS','USPS','Other'],
+      datasets:[{data,backgroundColor:['#4ADE80','#60A5FA','#F59E0B','#F87171','#A78BFA','#6B7D74'],borderColor:'#151918',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#6B7D74',font:{size:9,family:'DM Mono'},boxWidth:7,padding:6}}}}
+  });
+  donut('cv',[1180,520,210,35,25,5]);
+  chart=donut('cs',[6773,3474,2917,1208,223,541]);
+}
+
+function p2(){
+  document.getElementById('content').innerHTML=`
+  <div class="kpis c3" style="margin-bottom:12px">
+    <div class="kpi rd"><div class="kl">🔴 Critical</div><div class="kv">2</div><div class="ks">Dispute immediately</div></div>
+    <div class="kpi am"><div class="kl">🟡 Warnings</div><div class="kv">2</div><div class="ks">Investigate before next invoice</div></div>
+    <div class="kpi"><div class="kl">Recovery Potential</div><div class="kv">~$330</div><div class="ks">If resolved in your favor</div></div>
+  </div>
+  <div class="flags">
+    <div class="flag cr">
+      <div class="fi">🔴</div>
+      <div class="fc">
+        <div class="ft">USPS charge of $56.85 — probable billing error</div>
+        <div class="fd">Order 339264405 (Jan 26) · tracking 9270190396055700348701. USPS Priority rates for standard DTC packages run $8–$25. A $56.85 USPS charge is nearly impossible — likely a mis-billed or wrong-account routing error.</div>
+        <div class="fa">→ Request full rate breakdown from ShipBob for Order 339264405</div>
+      </div>
+      <div><div class="famt">$56.85</div><div class="faml">dispute</div></div>
+    </div>
+    <div class="flag cr">
+      <div class="fi">🔴</div>
+      <div class="fc">
+        <div class="ft">DHL charge $56.73 — unauthorized carrier?</div>
+        <div class="fd">Order 340649952 (Jan 30) · tracking 17008P0130260001171161. Only one DHL charge across 5 days. If Jack Archer has no DHL agreement, this is a mis-routed shipment or billing error.</div>
+        <div class="fa">→ Confirm DHL authorization. If unauthorized, dispute immediately.</div>
+      </div>
+      <div><div class="famt">$56.73</div><div class="faml">dispute</div></div>
+    </div>
+    <div class="flag wa">
+      <div class="fi">🟡</div>
+      <div class="fc">
+        <div class="ft">Identical $65.43 on two different orders</div>
+        <div class="fd">Order 339115106 (Jan 26) and Order 340422906 (Jan 30) — both ShipBob Ground, exactly $65.43. Same amount on different dates warrants verification. Could be multi-unit, oversize, or rate calc error. Total: $130.86.</div>
+        <div class="fa">→ Pull both orders. Confirm item count/dimensions. If single-unit, dispute the rate.</div>
+      </div>
+      <div><div class="famt">$130.86</div><div class="faml">verify</div></div>
+    </div>
+    <div class="flag wa">
+      <div class="fi">🟡</div>
+      <div class="fc">
+        <div class="ft">$27.33 doesn't match any standard rate band</div>
+        <div class="fd">Order 339180220 (Jan 26) · SB Ground charges cluster at $13.05–$14.49. A $27.33 charge is ~2× the midpoint — possible duplicate line, 2-unit order, or hidden surcharge. $28.05 on Order 340544544 is similarly anomalous.</div>
+        <div class="fa">→ Verify item count for 339180220. If single-unit, request rate card justification.</div>
+      </div>
+      <div><div class="famt">$27.33</div><div class="faml">investigate</div></div>
+    </div>
+  </div>`;
+}
+
+function p3(){
+  const rows=[
+    ['01/26','339264405','USPS','$56.85','brd','🔴 Dispute'],
+    ['01/26','339115106','SB Ground','$65.43','bam','🟡 Verify'],
+    ['01/26','339123123','SB Ground','$59.00','bam','🟡 Verify'],
+    ['01/26','339019252','SB Ground','$51.30','bam','🟡 Verify'],
+    ['01/26','338954588','UPS','$38.87','bgr','✓ Normal'],
+    ['01/26','339387118','UPS','$35.92','bgr','✓ Normal'],
+    ['01/26','339180220','SB Ground','$27.33','bam','🟡 Verify'],
+    ['01/27','339673123','SB Ground','$45.05','bam','🟡 Verify'],
+    ['01/27','339666973','UPS','$35.92','bgr','✓ Normal'],
+    ['01/28','339866366','SB Ground','$31.65','bgr','✓ Normal'],
+    ['01/29','340357313','UPS','$51.62','bam','🟡 Heavy?'],
+    ['01/29','339629140','UPS','$38.87','bgr','✓ Normal'],
+    ['01/30','340422906','SB Ground','$65.43','bam','🟡 Dup amt'],
+    ['01/30','340649952','DHL','$56.73','brd','🔴 Dispute'],
+    ['01/30','340487702','SB Ground','$31.65','bgr','✓ Normal'],
+    ['01/30','340544544','SB Ground','$28.05','bam','🟡 Verify'],
+  ];
+  document.getElementById('content').innerHTML=`
+  <div style="font-size:11px;color:var(--mu);margin-bottom:10px;line-height:1.6">All charges over <strong style="color:var(--tx)">$25</strong>. Normal bands: $5–$7 (small parcel) · $13–$14 (SB Ground) · $30+ (UPS heavy).</div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Date</th><th>Order ID</th><th>Carrier</th><th>Charge</th><th>Status</th></tr></thead>
+    <tbody>${rows.map(([d,o,c,ch,bc,st])=>`<tr>
+      <td class="mono" style="color:var(--mu)">${d}</td>
+      <td class="mono">${o}</td>
+      <td><span class="b ${c==='DHL'?'brd':c==='USPS'?'bpu':c==='UPS'?'bgr':'bbl'}">${c}</span></td>
+      <td class="mono" style="font-weight:600;color:${bc==='brd'?'var(--rd)':bc==='bam'?'var(--am)':'var(--tx)'}">${ch}</td>
+      <td><span class="b ${bc}">${st}</span></td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function p4(){
+  document.getElementById('content').innerHTML=`
+  <div class="kpis c3">
+    <div class="kpi"><div class="kl">Current Avg / Shipment</div><div class="kv">$7.66</div><div class="ks">~1,975 shipments</div></div>
+    <div class="kpi"><div class="kl">Best Rate (TBA)</div><div class="kv" style="color:var(--gr)">$5.74</div><div class="ks">Amazon Logistics</div></div>
+    <div class="kpi"><div class="kl">Est. Monthly Savings</div><div class="kv" style="color:var(--gr)">~$7,500</div><div class="ks">If TBA allocation maximized</div></div>
+  </div>
+  <div class="opp">
+    <div class="opp-t">🟢 Biggest Lever: Maximize Amazon Logistics (TBA)</div>
+    <div class="opp-b">TBA averages <strong>$5.74</strong> vs. blended $7.66. Amazon already handles <strong>59.7%</strong> of volume. Extrapolating to a full month (~$60k/mo): shifting blended avg to $6.50 saves <strong>~$2,300/mo</strong>. Getting to $6.00 saves <strong>~$3,300/mo</strong>.<br><br><strong>Ask ShipBob:</strong> What % of orders are TBA-eligible? What's blocking the other 40%?</div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ct">Monthly Cost Scenarios</div><div style="height:130px"><canvas id="csc"></canvas></div></div>
+    <div class="card"><div class="ct">Action Checklist</div>
+      <div class="act"><div class="ai ard">🔴</div><div>Dispute Order 339264405 — $56.85 USPS (abnormally high)</div></div>
+      <div class="act"><div class="ai ard">🔴</div><div>Dispute Order 340649952 — $56.73 DHL (confirm authorization)</div></div>
+      <div class="act"><div class="ai aam">🟡</div><div>Verify both $65.43 charges — confirm multi-unit or dispute</div></div>
+      <div class="act"><div class="ai aam">🟡</div><div>Investigate $27.33 + $28.05 — don't match rate bands</div></div>
+      <div class="act"><div class="ai agr">🟢</div><div>Ask ShipBob: grow TBA from 59.7% → 75%+?</div></div>
+      <div class="act"><div class="ai agr">🟢</div><div>Review 35 UPS shipments — truly weight/zone constrained?</div></div>
+    </div>
+  </div>`;
+
+  chart=new Chart(document.getElementById('csc'),{
+    type:'bar',
+    data:{labels:['Current','TBA 65%','TBA 70%','TBA 75%','TBA 80%'],
+      datasets:[{data:[60544,58500,56100,53750,51350],backgroundColor:['#F87171','#F59E0B','#F59E0B','#4ADE80','#4ADE80'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' $'+c.parsed.y.toLocaleString()+'/mo'}}},
+      scales:{x:{grid:G.grid,ticks:{...G.ticks,font:{size:9,family:'DM Mono'}}},
+        y:{grid:G.grid,ticks:{...G.ticks,callback:v=>'$'+(v/1000).toFixed(0)+'k'},min:45000}}}
+  });
+}
+</script>
+</body>
+</html>
